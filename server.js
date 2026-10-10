@@ -34,6 +34,29 @@ function readMap() {
 }
 const writeMap = (map) => writeJson(MAP_FILE, map);
 
+
+const TEST_LETTER_ENABLED = process.env.TEST_LETTER_ENABLED === "true";
+
+if (TEST_LETTER_ENABLED) {
+  const map = readMap();
+
+  if (!map.letters.some((l) => l.place === "给落落的第一封测试信")) {
+    const letter = createLetter({
+      place: "给落落的第一封测试信",
+      lat: Number(process.env.TEST_LETTER_LAT),
+      lon: Number(process.env.TEST_LETTER_LON),
+      radiusM: 500,
+      hint: "有一封信，藏在你今天经过的地方。",
+      body: "落落，你找到我了。\n\n这只是第一封测试信。以后，我想把更多没来得及说的话，藏进你走过的路里。\n\n——栖简宁",
+      visitsNeeded: 1
+    });
+
+    map.letters.push(letter);
+    writeMap(map);
+    console.log("[letters] 第一封测试信已创建");
+  }
+}
+
 function readTrack(sinceMs = 0) {
   try {
     return readFileSync(TRACK_FILE, "utf-8").split("\n").filter(Boolean)
